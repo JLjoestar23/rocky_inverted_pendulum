@@ -1,0 +1,18 @@
+function run_sim()
+    system_params.m_c = 0.5;
+    system_params.m_p = 0.2;
+    system_params.l = 0.3;
+    system_params.I = 0.006;
+
+    tspan = [0 15];
+    x0 = [0; 0; pi+0.1; 0];
+    
+    [tlist1, xlist1] = ode45(@(t, x) rate_func(t, x, system_params), tspan, x0);
+    [tlist2, xlist2] = ode45(@(t, x) pendulum_cart_rate(t, x, system_params, 0), tspan, x0);
+    
+    plot(tlist1, xlist1)
+    plot(tlist2, )
+
+    %animate_cart_pendulum(tlist, xlist, system_params);
+
+end
