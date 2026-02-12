@@ -1,4 +1,4 @@
-function run_sim()
+function run_sim(record_status)
     system_params.m_c = 0.5; % cart mass (kg)
     system_params.m_p = 0.2; % pendulum mass (kg)
     system_params.l = 0.2; % pendulum COM length (m)
@@ -7,7 +7,7 @@ function run_sim()
     system_params.X_ref = [1; 0; 0; 0]; % reference state vector
     
     % initial conditions
-    tspan = [0 15];
+    tspan = [0 20];
     x_i = 0;
     xdot_i = 0;
     theta_i = deg2rad(0);
@@ -16,7 +16,7 @@ function run_sim()
     
     % solve
     [tlist, xlist] = ode45(@(t, x) nonlin_rate_func(t, x, system_params), tspan, x0);
-
+    
     % initialize animation
     figure();
     plot(tlist, xlist(:,1), 'DisplayName', 'Position');
@@ -29,7 +29,7 @@ function run_sim()
     ylabel('State Variables');
     grid on;
     hold off;
-
-    animate_cart_pendulum(tlist, xlist, system_params);
+    
+    animate_cart_pendulum(tlist, xlist, system_params, record_status);
 
 end
