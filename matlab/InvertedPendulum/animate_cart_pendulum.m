@@ -1,4 +1,4 @@
-function animate_cart_pendulum(tlist, xlist, params)
+function animate_cart_pendulum(tlist, xlist, params, record_status)
 
     % unpack params
     l = 2*params.l;
@@ -37,6 +37,13 @@ function animate_cart_pendulum(tlist, xlist, params)
     t_anim = (tlist(1) : dt_real : tlist(end)); 
     x_anim = interp1(tlist, xlist, t_anim, 'linear'); % linear interp
 
+    % initialize video
+    if record_status == true
+        myVideo = VideoWriter('full-state-feedback'); % open video file
+        myVideo.FrameRate = 60;
+        open(myVideo)
+    end
+
     % animation loop
     for k = 1:length(t_anim)
 
@@ -58,7 +65,16 @@ function animate_cart_pendulum(tlist, xlist, params)
 
         title(sprintf('Cart–Pendulum Animation (t = %.2f s)', t_anim(k)));
 
+        if record_status == true
+            frame = getframe(gcf); %get frame
+            writeVideo(myVideo, frame);
+        end
+
         pause(dt_real/4);
+    end
+
+    if record_status == true
+        close(myVideo);
     end
 
 end
