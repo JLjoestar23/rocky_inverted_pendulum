@@ -15,10 +15,10 @@ function dXdt = nonlin_rate_func(t, X, system_params)
     X_ref = system_params.X_ref;
     
     % step function
-    if t < 2
-        X_ref(1) = 0;
+    if mod(floor(t/4), 2) == 0
+        X_ref = [0; 0; 0; 0];
     else
-        X_ref(1) = 1;
+        X_ref = system_params.X_ref;
     end
 
     % calculate the error between reference and current state
