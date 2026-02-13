@@ -4,6 +4,7 @@ function dXdt = nonlin_rate_func(t, X, system_params)
     dx = X(2);
     theta = X(3);
     dtheta = X(4);
+    %z = X(5); % integral state
     
     % define system params
     m_c = system_params.m_c;
@@ -12,7 +13,6 @@ function dXdt = nonlin_rate_func(t, X, system_params)
     I = 1/3 * m_p * 2*l^2;
     g = 9.81;
     K = system_params.K;
-    X_ref = system_params.X_ref;
     
     % step function
     if mod(floor(t/4), 2) == 0
@@ -22,12 +22,10 @@ function dXdt = nonlin_rate_func(t, X, system_params)
     end
 
     % calculate the error between reference and current state
-    error = X_ref - X;
+    error = X_ref(1:4) - X(1:4);
 
     % integrate position error
-    
-
-    %if abs(X_ref(1) - x)
+    %dz = X_ref(1) - X(1);
 
     % calculate control input
     u = K * error;
