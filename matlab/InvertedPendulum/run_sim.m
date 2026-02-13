@@ -2,7 +2,7 @@ function run_sim(record_status)
     system_params.m_c = 0.5; % cart mass (kg)
     system_params.m_p = 0.2; % pendulum mass (kg)
     system_params.l = 0.2; % pendulum COM length (m)
-    system_params.K = [-6, -4.5, 25, 4]; % tuned gain matrix
+    system_params.K = [-6, -4.75, 25, 4]; % tuned gain matrix
     %system_params.K = [0, -5, 25, 4]; % experimental gain matrix
     system_params.X_ref = [1; 0; 0; 0]; % reference state vector
     
@@ -27,6 +27,7 @@ function run_sim(record_status)
     legend show;
     xlabel('Time (s)');
     ylabel('State Variables');
+    title('Pendulum State Evolution Over Time');
     grid on;
     hold off;
     
