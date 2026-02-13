@@ -11,7 +11,7 @@ function run_sim(record_status)
     x_i = 0;
     xdot_i = 0;
     theta_i = deg2rad(0);
-    thetadot_i = 0;
+    thetadot_i = deg2rad(0);
     x0 = [x_i; xdot_i; theta_i; thetadot_i];
     
     % solve
