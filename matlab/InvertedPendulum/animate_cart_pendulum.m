@@ -25,10 +25,15 @@ function animate_cart_pendulum(tlist, xlist, params, record_status)
     % initialize graphics objects
     cart = rectangle('Position', [xlist(1,1)-cart_width/2, -cart_height/2, cart_width, cart_height], ...
                      'FaceColor', [0 0.4 1]);
-    
-    pendulum = line([xlist(1,1), xlist(1,1) - l*sin(xlist(1,3))], ...
-                    [0, l*cos(xlist(1,3))], ...
-                    'LineWidth', 250*pend_width, 'Color', 'k');
+
+    %pendulum = line([xlist(1,1), xlist(1,1) - l*sin(xlist(1,3))], ...
+    %                [0, l*cos(xlist(1,3))], ...
+    %                'LineWidth', 250*pend_width, 'Color', 'k');
+
+    pendulum = patch('XData', [], 'YData', [], ...
+                    'FaceColor', 'k', ...
+                    'EdgeColor', 'none');
+
 
     % adjustments in order to create a real time animation
     fps = 60; % desired frames-per-second
@@ -50,16 +55,43 @@ function animate_cart_pendulum(tlist, xlist, params, record_status)
         x     = x_anim(k,1);
         theta = x_anim(k,3);
 
-        % Update cart position
+        % update cart position
         cart.Position = [x - cart_width/2, -cart_height/2, cart_width, cart_height];
 
-        % Compute pendulum endpoint
+        % compute pendulum endpoint
         px = x - l*sin(theta);
         py = l*cos(theta);
-
-        % Update pendulum line
-        pendulum.XData = [x px];
-        pendulum.YData = [0 py];
+        
+        % direction vector
+        dx = px - x;
+        dy = py - 0;
+        
+        % normalize direction
+        L = sqrt(dx^2 + dy^2);
+        ux = dx / L;
+        uy = dy / L;
+        
+        % perpendicular vector
+        wx = -uy;
+        wy = ux;
+        
+        % half width
+        w = pend_width / 2;
+        
+        % four rectangle corners
+        x_corners = [x + w*wx, ...
+                     x - w*wx, ...
+                     px - w*wx, ...
+                     px + w*wx];
+        
+        y_corners = [0 + w*wy, ...
+                     0 - w*wy, ...
+                     py - w*wy, ...
+                     py + w*wy];
+        
+        % update
+        pendulum.XData = x_corners;
+        pendulum.YData = y_corners;
 
         drawnow;
 
