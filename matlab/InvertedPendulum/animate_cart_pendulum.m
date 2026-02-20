@@ -79,15 +79,9 @@ function animate_cart_pendulum(tlist, xlist, params, record_status)
         w = pend_width / 2;
         
         % four rectangle corners
-        x_corners = [x + w*wx, ...
-                     x - w*wx, ...
-                     px - w*wx, ...
-                     px + w*wx];
+        x_corners = [x + w*wx, x - w*wx, px - w*wx, px + w*wx];
         
-        y_corners = [0 + w*wy, ...
-                     0 - w*wy, ...
-                     py - w*wy, ...
-                     py + w*wy];
+        y_corners = [0 + w*wy, 0 - w*wy, py - w*wy, py + w*wy];
         
         % update
         pendulum.XData = x_corners;
@@ -102,7 +96,7 @@ function animate_cart_pendulum(tlist, xlist, params, record_status)
             writeVideo(myVideo, frame);
         end
 
-        pause(dt_real/4);
+        pause(dt_real/8);
     end
 
     if record_status == true
