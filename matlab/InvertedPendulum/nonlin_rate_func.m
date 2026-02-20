@@ -7,10 +7,10 @@ function dXdt = nonlin_rate_func(t, X, system_params)
     %z = X(5); % integral state
     
     % define system params
-    m_c = system_params.m_c;
-    m_p = system_params.m_p;
+    M = system_params.m_c;
+    m = system_params.m_p;
     l = system_params.l;
-    I = 1/3 * m_p * 2*l^2;
+    I = 1/12 * m * l^2;
     g = 9.81;
     K = system_params.K;
     
@@ -22,7 +22,7 @@ function dXdt = nonlin_rate_func(t, X, system_params)
     end
 
     % calculate the error between reference and current state
-    error = X_ref(1:4) - X(1:4);
+    error = X_ref - X;
 
     % integrate position error
     %dz = X_ref(1) - X(1);
@@ -30,10 +30,10 @@ function dXdt = nonlin_rate_func(t, X, system_params)
     % calculate control input
     u = K * error;
 
-    M = [m_c + m_p, -m_p*l*cos(theta); 
-         -m_p*l*cos(theta), I + m_p*l^2];
-    B = [-m_p*l*dtheta^2*sin(theta); m_p*g*l*sin(theta)]; % free response
-    B_force = [-m_p*l*dtheta^2*sin(theta) + u; m_p*g*l*sin(theta)]; % feedback response
+    M = [M + m, -m*l*cos(theta); 
+         -m*l*cos(theta), I + m*l^2];
+    B = [-m*l*dtheta^2*sin(theta); m*g*l*sin(theta)]; % free response
+    B_force = [-m*l*dtheta^2*sin(theta) + u; m*g*l*sin(theta)]; % feedback response
 
     % calculate accelerations using the inverse of the mass matrix
     accels = M \ B_force;
