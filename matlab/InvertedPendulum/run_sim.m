@@ -1,9 +1,16 @@
 function run_sim(record_status)
+    
+    arguments
+        % default option is to not record
+        record_status = false;
+    end
+
     system_params.m_c = 0.5; % cart mass (kg)
     system_params.m_p = 0.2; % pendulum mass (kg)
     system_params.l = 0.2; % pendulum COM length (m)
-    system_params.K = [-6, -4.75, 25, 4]; % tuned gain matrix
+    %system_params.K = [-6, -4.75, 25, 4]; % hand-tuned gain matrix
     %system_params.K = [0, -5, 25, 4]; % experimental gain matrix
+    system_params.K = [-7.6, -6.4, 31.6, 6.1]; % gain matrix via pole placement
     system_params.X_ref = [1; 0; 0; 0]; % reference state vector
     
     % initial conditions
@@ -15,7 +22,7 @@ function run_sim(record_status)
     x0 = [x_i; xdot_i; theta_i; thetadot_i];
     
     % solve
-    [tlist, xlist] = ode45(@(t, x) nonlin_rate_func(t, x, system_params), tspan, x0);
+    [tlist, xlist] = ode45(@(t, x) lin_rate_func(t, x, system_params), tspan, x0);
     
     % initialize animation
     figure();
