@@ -13,12 +13,22 @@ function dXdt = nonlin_rate_func(t, X, system_params)
     I = 1/12 * m * l^2;
     g = 9.81;
     K = system_params.K;
+    X_ref = system_params.X_ref;
     
     % step function
-    if mod(floor(t/4), 2) == 0
-        X_ref = [0; 0; 0; 0];
+    %if mod(floor(t/4), 2) == 0
+    %    X_ref = [0; 0; 0; 0];
+    %else
+    %    X_ref = system_params.X_ref;
+    %end
+    
+    % position-error gain switching
+    if abs(X_ref(1) - X(1)) > 0.2
+        K(1) = 0;
+        X_ref(2) = 0.4;
     else
-        X_ref = system_params.X_ref;
+        K = system_params.K;
+        X_ref(2) = 0;
     end
 
     % calculate the error between reference and current state
