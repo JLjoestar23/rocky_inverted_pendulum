@@ -28,7 +28,7 @@ C = eye(4);
 D = 0;
 
 % create free-response state space model
-pc_ss = ss(A, B, C, D);
+sys_ol = ss(A, B, C, D);
 
 % verify controllability of the system
 controllability_matrix = ctrb(A, B);
@@ -57,13 +57,13 @@ end
 
 figure();
 hold on;
-pzplot(pc_ss);
+pzplot(sys_ol);
 grid on;
 title('Pole-Zero Plot for Open Loop System');
 hold off;
 
 % impulse response
-impulseResponse = impulse(pc_ss);
+impulseResponse = impulse(sys_ol);
 
 % plot the impulse response to validate unstable equilibrium
 % figure looks correct
@@ -102,5 +102,5 @@ legend;
 plot(t, step_cl);
 hold off;
 
-stepinfo = stepinfo(sys_cl);
-
+% step info
+step = stepinfo(step_cl, t);
