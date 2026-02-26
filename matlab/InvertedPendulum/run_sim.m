@@ -14,7 +14,7 @@ function run_sim(record_status)
     system_params.X_ref = [1; 0; 0; 0]; % reference state vector
     
     % initial conditions
-    tspan = [0 20];
+    tspan = [0 10];
     x_i = 0;
     xdot_i = 0;
     theta_i = deg2rad(0);
@@ -22,7 +22,7 @@ function run_sim(record_status)
     x0 = [x_i; xdot_i; theta_i; thetadot_i];
     
     % solve
-    [tlist, xlist] = ode45(@(t, x) lin_rate_func(t, x, system_params), tspan, x0);
+    [tlist, xlist] = ode45(@(t, x) nonlin_rate_func(t, x, system_params), tspan, x0);
     
     % initialize animation
     figure();
