@@ -4,7 +4,6 @@ function dXdt = nonlin_rate_func(t, X, system_params)
     dx = X(2);
     theta = X(3);
     dtheta = X(4);
-    %z = X(5); % integral state
     
     % define system params
     M = system_params.m_c;
@@ -16,11 +15,13 @@ function dXdt = nonlin_rate_func(t, X, system_params)
     X_ref = system_params.X_ref;
     
     % step function
-    %if mod(floor(t/4), 2) == 0
-    %    X_ref = [0; 0; 0; 0];
-    %else
-    %    X_ref = system_params.X_ref;
-    %end
+    %{
+    if mod(floor(t/4), 2) == 0
+        X_ref = [0; 0; 0; 0];
+    else
+        X_ref = system_params.X_ref;
+    end
+    %}
     
     % position-error gain switching
     if abs(X_ref(1) - X(1)) > 0.2
