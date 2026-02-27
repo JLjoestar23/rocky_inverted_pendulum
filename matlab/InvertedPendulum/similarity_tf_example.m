@@ -49,9 +49,41 @@ T2 = [1 b3 b2 b1;
       0 0  1  b3;
       0 0  0  1];
 
-%T = T1*T2*T3;
-
-T = T1;
+T = T1*T2*T3;
 
 Az = T^-1 * A * T
 Bz = T^-1 * B
+
+%% Show the characteristic polynomial remains the same between transforms
+
+% convert to symbolic form to avoid precision error
+As = sym(A);
+Bs = sym(B);
+Cos = [Bs, As*Bs, As^2*Bs, As^3*Bs];
+
+% use symbolic characteristic polynomial coefficients
+ps = charpoly(As, s); 
+coeffs_s = coeffs(ps, s, 'All'); % returns [1, a3, a2, a1, a0] sym
+
+b3 = coeffs_s(2);
+b2 = coeffs_s(3);
+b1 = coeffs_s(4);
+b0 = coeffs_s(5);
+
+T2 = [1 b3 b2 b1;
+      0 1  b3 b2;
+      0 0  1  b3;
+      0 0  0  1];
+
+T3 = fliplr(eye(4));
+Ts = Cos * T2 * T3;
+
+K = [k1 k2 k3 k4];
+Kz = K * Ts;
+
+
+Azs = Ts^-1 * As * Ts;
+Bzs = Ts^-1 * B;
+
+char_poly = collect(det(s*eye(4) - (As - Bs*K)), s)
+char_poly_tf = collect(det(s*eye(4) - (Azs - Bzs*Kz)), s)
