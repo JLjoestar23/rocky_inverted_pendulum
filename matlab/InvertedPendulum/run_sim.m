@@ -13,7 +13,8 @@ function run_sim(record_status)
     %system_params.K = [-6, -4.75, 25, 4]; % hand-tuned gain matrix
     %system_params.K = [0, -5, 25, 4]; % experimental gain matrix
     %system_params.K = [-7.6, -6.4, 31.6, 6.1]; % gain matrix via pole placement
-    system_params.K = [-7.4, -5, 24.5, 4.1, 4.7]; % gain matrix w/ integrated x error
+    system_params.K = [-10.86, -6.8, 29.63, 5.06, 7.23]; % gain matrix w/ integrated x error
+    %system_params.K = [0, 0, 0, 0, 0];
     
     % choose bewteen reference matrix
     system_params.X_ref = [0.5; 0; 0; 0]; % 4 state reference vector

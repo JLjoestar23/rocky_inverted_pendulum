@@ -162,8 +162,9 @@ end
 
 %% Pole placement for 5 state system
 
-desired_poles = [-2.5+1i, -2.5-1i, -3+0.75i, -3-0.75i, -4];
+desired_poles = [-2+0.8i, -2-0.8i, -4+1.5i, -4-1.5i, -5];
 K = place(A, B, desired_poles);
+
 A_cl = A-B*K;
 
 sys_cl = ss(A_cl, B, C, D);
