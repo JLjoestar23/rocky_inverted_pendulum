@@ -29,11 +29,13 @@ function dXdt = nonlin_rate_func_v2(t, X, system_params)
     u = K(1:4)*(X_ref - X(1:4)) + K(5)*-z;
     
     % simulating an impulse disturbance
-    if abs(floor(mod(t, 6))) == 0
-        disturbance = 1;
-    else
-        disturbance = 0;
-    end
+    %if abs(floor(mod(t, 6))) == 0
+    %    disturbance = 1;
+    %else
+    %    disturbance = 0;
+    %end
+
+    disturbance = 0;
 
     u = u + disturbance;
 

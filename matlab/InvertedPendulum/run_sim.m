@@ -16,14 +16,15 @@ function run_sim(K, record_status)
     %system_params.K = [-6, -4.75, 25, 4]; % hand-tuned gain matrix
     %system_params.K = [0, -5, 25, 4]; % experimental gain matrix
     %system_params.K = [-7.6, -6.4, 31.6, 6.1]; % gain matrix via pole placement
+    %system_params.K = [-7.86, -5.1, 25, 4.18, 0]; experimental gain matrix
     system_params.K = K; % gain matrix w/ integrated x error
-    %system_params.K = [0, 0, 0, 0, 0];
+    
     
     % choose bewteen reference matrix
     system_params.X_ref = [0.5; 0; 0; 0]; % 4 state reference vector
     
     % initial conditions
-    tspan = [0 30];
+    tspan = [0 20];
     x_i = 0;
     xdot_i = 0;
     theta_i = deg2rad(0);
@@ -72,7 +73,7 @@ function run_sim(K, record_status)
     grid on;
     hold off;
     
-    animate_cart_pendulum(tlist, xlist, system_params, record_status);
+    %animate_cart_pendulum(tlist, xlist, system_params, record_status);
     
     % disp step response characteristics for position
     disp(stepinfo(xlist(:, 1), tlist));
