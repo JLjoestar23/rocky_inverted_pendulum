@@ -162,10 +162,16 @@ end
 
 %% Pole placement for 5 state system
 
-desired_poles = [-2+0.8i, -2-0.8i, -4+1.5i, -4-1.5i, -5];
+close all;
+
+desired_poles = [-2+1i, -2-1i, -4+2i, -4-2i, -3];
 K = place(A, B, desired_poles);
+K = round(K, 2);
 
 A_cl = A-B*K;
+
+% analyze natural frequencies and mode shapes
+[V, W] = eig(A_cl);
 
 sys_cl = ss(A_cl, B, C, D);
 
@@ -177,7 +183,7 @@ title('Pole-Zero Plot for Open Loop System');
 hold off;
 
 % closed-loop impulse response
-[step_cl, t] = step(sys_cl);
+[step_cl, t] = step(sys_cl, 10);
 
 figure();
 hold on;
@@ -187,4 +193,5 @@ plot(t, step_cl);
 hold off;
 
 % step info
-step_info = stepinfo(step_cl, t);
+x_step_info = stepinfo(step_cl(:, 1), t);
+theta_step_info = stepinfo(step_cl(:, 3), t);      
