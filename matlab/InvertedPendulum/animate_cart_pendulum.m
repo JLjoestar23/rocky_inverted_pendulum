@@ -19,7 +19,7 @@ function animate_cart_pendulum(tlist, xlist, params, record_status)
     % set axis limits based on motion
     xmin = min(xlist(:,1)) - 0.5;
     xmax = max(xlist(:,1)) + 0.5;
-    ylim([-0.5, 0.5]);
+    %ylim([-0.5, 0.5]);
     xlim([xmin xmax]);
 
     % initialize graphics objects
