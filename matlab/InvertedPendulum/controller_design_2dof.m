@@ -164,7 +164,7 @@ end
 
 close all;
 
-desired_poles = [-2+1i, -2-1i, -4+2i, -4-2i, -3];
+desired_poles = [-1, -2, -3, -4, -5];
 K = place(A, B, desired_poles);
 K = round(K, 2);
 
@@ -194,4 +194,32 @@ hold off;
 
 % step info
 x_step_info = stepinfo(step_cl(:, 1), t);
-theta_step_info = stepinfo(step_cl(:, 3), t);      
+theta_step_info = stepinfo(step_cl(:, 3), t);
+
+%% Modal Analysis (free response)
+
+M = 0.5; % cart mass (kg)
+m = 0.2; % pendulum mass (kg)
+l = 0.3; % distance from pivot to pendulum COM (m)
+I = 1/12 * m * l^2; % mass moment of inertia about pendulum COM (kg*m^2)
+g = 9.8; % gravitational acceleration m/s^2
+
+% elements of A and B
+a = (m^2*l^2*g) / (I*(m+M) + m*M*l^2);
+b = m*g*l*(m+M) / (I*(m+M) + m*M*l^2);
+c = (I+m*l^2) / (I*(m+M) + m*M*l^2);
+d = m*l / (I*(m+M) + m*M*l^2);
+
+% state matrix
+A = [0 a ; b 0];
+
+% input vector
+B = [c; d];
+
+% output matrix
+C = eye(2);
+
+% feedforward
+D = 0;
+
+[V, W] = eig(A);

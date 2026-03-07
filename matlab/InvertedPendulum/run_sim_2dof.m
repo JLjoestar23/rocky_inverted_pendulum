@@ -1,4 +1,4 @@
-function run_sim(K, record_status)
+function run_sim_2dof(K, record_status)
     
     arguments
         K = [-7.86, -5.1, 25, 4.18, 5.13];
