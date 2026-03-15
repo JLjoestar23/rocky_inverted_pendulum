@@ -34,7 +34,7 @@ function run_sim_2dof(K, record_status)
     x0 = [x_i; xdot_i; theta_i; thetadot_i; z_i];
     
     % solve
-    [tlist, xlist] = ode45(@(t, x) nonlin_rate_func_v2(t, x, system_params), tspan, x0);
+    [tlist, xlist] = ode45(@(t, x) nonlin_2dof_rate_func_v2(t, x, system_params), tspan, x0);
     
     % for readability
     x = xlist(:,1);
@@ -57,6 +57,7 @@ function run_sim_2dof(K, record_status)
     plot(tlist, dx, 'DisplayName', 'Velocity (m/s)');
     plot(tlist, theta, 'DisplayName', 'Theta (rad)');
     plot(tlist, dtheta, 'DisplayName', 'Angular Rate (rad/s)');
+    %plot(tlist, 0.5*tlist, 'DisplayName', 'Reference Position (m)');
     legend show;
     xlabel('Time (s)');
     ylabel('State Variables');
@@ -73,7 +74,7 @@ function run_sim_2dof(K, record_status)
     grid on;
     hold off;
     
-    %animate_cart_pendulum(tlist, xlist, system_params, record_status);
+    animate_cart_pendulum(tlist, xlist, system_params, record_status);
     
     % disp step response characteristics for position
     disp(stepinfo(xlist(:, 1), tlist));
