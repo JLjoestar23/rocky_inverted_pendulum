@@ -164,7 +164,7 @@ end
 
 close all;
 
-desired_poles = [-1, -2, -3, -4, -5];
+desired_poles = [-3+1.5i, -3-1.5i, -4+2i, -4-2i, -8];
 K = place(A, B, desired_poles);
 K = round(K, 2);
 

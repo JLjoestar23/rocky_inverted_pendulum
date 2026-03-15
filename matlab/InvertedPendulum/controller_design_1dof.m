@@ -20,10 +20,13 @@ A = [0 1 0 0;
 B = [0; b/tau; 0; b/(l*tau)];
 
 % output matrix
-C = eye(4);
+C = [0 1 0 0];
 
 % feedforward
 D = 0;
+
+% 
+N = -inv(C*(A-B*K)^-1*B);
 
 % create free-response state space model
 sys_ol = ss(A, B, C, D);
@@ -107,38 +110,40 @@ step_info = stepinfo(step_cl, t);
 
 %% Linearization of 5 State Model w/ Integrated position error
 
-M = 0.5; % cart mass (kg)
-m = 0.2; % pendulum mass (kg)
-l = 0.3; % distance from pivot to pendulum COM (m)
-I = 1/12 * m * l^2; % mass moment of inertia about pendulum COM (kg*m^2)
+% pendulum characteristics
+l = 0.4185; % effective length of pendulum (m)
 g = 9.8; % gravitational acceleration m/s^2
 
+% motor characteristics
+tau = 0.161; % motor time constant
+b = 0.00265; % PWM signal gain
+
 % elements of A and B
-a = (m^2*l^2*g) / (I*(m+M) + m*M*l^2);
-b = m*g*l*(m+M) / (I*(m+M) + m*M*l^2);
-c = (I+m*l^2) / (I*(m+M) + m*M*l^2);
-d = m*l / (I*(m+M) + m*M*l^2);
 
 % state matrix
 A = [0 1 0 0;
-     0 0 a 0;
-     0 0 0 1;
-     0 0 b 0];
+    0 -1/tau 0 0;
+    0 0 0 1;
+    0 -1/(l*tau) g/l 0];
 
 % input vector
-B = [0; c; 0; d];
-
-A = [A zeros(size(A, 1), 1); -1 zeros(1, size(A, 1))];
-B = [B; 0];
+B = [0; b/tau; 0; b/(l*tau)];
 
 % output matrix
-C = eye(5);
+%C = [1 0 0 0]; % output is position
+C = [0 1 0 0]; % output is velocity
 
 % feedforward
 D = 0;
 
+% augmented state matrix and input vector
+A_aug = [A zeros(length(A), 1); -C 0];
+B_aug = [B; 0];
+
+C_aug = eye(5); % for modeling sake, keep all states visible
+
 % create free-response state space model
-sys_ol = ss(A, B, C, D);
+sys_ol = ss(A_aug, B_aug, C_aug, D);
 
 % verify controllability of the system
 controllability_matrix = ctrb(A, B);
@@ -164,16 +169,16 @@ end
 
 close all;
 
-desired_poles = [-2+1i, -2-1i, -4+2i, -4-2i, -3];
-K = place(A, B, desired_poles);
+desired_poles = [-2+1i, -2-1i, -3+2i, -3-2i, -8];
+K = place(A_aug, B_aug, desired_poles);
 K = round(K, 2);
 
-A_cl = A-B*K;
+A_cl = A_aug-B_aug*K;
 
 % analyze natural frequencies and mode shapes
 [V, W] = eig(A_cl);
 
-sys_cl = ss(A_cl, B, C, D);
+sys_cl = ss(A_cl, B_aug, C_aug, D);
 
 figure();
 hold on;
@@ -193,5 +198,5 @@ plot(t, step_cl);
 hold off;
 
 % step info
-x_step_info = stepinfo(step_cl(:, 1), t);
-theta_step_info = stepinfo(step_cl(:, 3), t);      
+x_step_info = stepinfo(step_cl, t);
+%theta_step_info = stepinfo(step_cl(:, 3), t);
