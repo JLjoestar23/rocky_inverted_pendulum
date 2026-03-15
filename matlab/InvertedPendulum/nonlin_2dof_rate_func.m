@@ -1,4 +1,4 @@
-function dXdt = nonlin_rate_func(t, X, system_params)
+function dXdt = nonlin_2dof_rate_func(t, X, system_params)
     % unpack states
     x = X(1);
     dx = X(2);

@@ -1,4 +1,4 @@
-function dXdt = nonlin_rate_func_v2(t, X, system_params)
+function dXdt = nonlin_2dof_rate_func_v2(t, X, system_params)
     % unpack states
     x = X(1);
     dx = X(2);
@@ -22,11 +22,20 @@ function dXdt = nonlin_rate_func_v2(t, X, system_params)
     %    X_ref = system_params.X_ref;
     %end
 
+    % ramp function
+    %{
+    if t > 0
+        X_ref = [0.5*t; 0; 0; 0];
+    else
+        X_ref = zeros(4, 1);
+    end
+    %}
+
     % calculate the error between reference and current state
     %error = X_ref - X;
 
     % calculate control input
-    u = K(1:4)*(X_ref - X(1:4)) + K(5)*-z;
+    u = K(1:4)*(-X(1:4)) + K(5)*-z;
     
     % simulating an impulse disturbance
     %if abs(floor(mod(t, 6))) == 0
