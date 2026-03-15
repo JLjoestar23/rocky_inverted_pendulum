@@ -11,19 +11,25 @@ function dXdt = nonlin_1dof_rate_func(t, X, system_params)
     tau = system_params.tau; 
     b = system_params.b;
     K = system_params.K;
-    X_ref = system_params.X_ref;
+    r = system_params.r;
+    N = K(1); % for the case of position tracking
 
     % step function
-    %{
-    if mod(floor(t/4), 2) == 0
-        X_ref = [0; 0; 0; 0];
-    else
-        X_ref = system_params.X_ref;
-    end
-    %}
+    % if mod(floor(t/4), 2) == 0
+    %     X_ref = [0; 0; 0; 0];
+    % else
+    %     X_ref = system_params.X_ref;
+    % end
+
+    % ramp function
+    % if t > 0
+    %     X_ref = [0.5*t; 0; 0; 0];
+    % else
+    %     X_ref = zeros(4, 1);
+    % end
 
     % simulate angle impulse disturbance
-    pulse_period = 4;      % every 4 seconds
+    pulse_period = 0;      % every 4 seconds
     pulse_duration = 0.05; % 50ms
     pulse_magnitude = 5.0;
     
@@ -33,16 +39,13 @@ function dXdt = nonlin_1dof_rate_func(t, X, system_params)
         dist_torque = 0;
     end
 
-    % calculate the error between reference and current state
-    error = X_ref - X;
-
     % calculate control input
-    u = K * error;
+    u = -K*X + N*r;
     %u = 30; % for now
 
     % calculating accelerations
     ddx = -dx/tau + b*u/tau; 
-    ddtheta = 1/l * (g*sin(theta) + (-dx/tau + b*u/tau)*cos(theta));
+    ddtheta = 1/l * (g*sin(theta) + (-dx/tau + b*u/tau)*cos(theta) + dist_torque);
 
     dXdt = [dx; ddx; dtheta; ddtheta];
 end
