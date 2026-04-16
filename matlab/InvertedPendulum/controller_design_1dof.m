@@ -5,8 +5,8 @@ l = 0.4185; % effective length of pendulum (m)
 g = 9.8; % gravitational acceleration m/s^2
 
 % motor characteristics
-tau = 0.161; % motor time constant
-b = 0.00265; % PWM signal gain
+tau = 0.0561; % motor time constant
+b = 0.0026; % PWM signal gain
 
 % elements of A and B
 
@@ -25,8 +25,7 @@ C = [0 1 0 0];
 % feedforward
 D = 0;
 
-% 
-N = -inv(C*(A-B*K)^-1*B);
+%N = -inv(C*(A-B*K)^-1*B);
 
 % create free-response state space model
 sys_ol = ss(A, B, C, D);
@@ -82,7 +81,7 @@ hold off;
 
 close all;
 
-desired_poles = [-2+1.28i, -2-1.28i, -4+2.57i, -4-2.57i];
+desired_poles = [-2+2.75i, -2-2.75i, -4+2.57i, -4-2.57i];
 K = place(A, B, desired_poles);
 A_cl = A-B*K;
 
