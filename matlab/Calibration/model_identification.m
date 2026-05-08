@@ -1,3 +1,5 @@
+%% Import motor speed data
+
 data = table2array(readtable("motor_calibration.csv"));
 
 L = data(:, 1);

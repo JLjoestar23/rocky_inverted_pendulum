@@ -1,4 +1,4 @@
-%% Linearization of 6 State Model w/ Integrated position error
+%% Create 4-DOF Model w/ Integrated position error
 
 % pendulum characteristics
 l = 0.4185; % effective length of pendulum (m)
@@ -18,11 +18,7 @@ A = [0 1 0 0;
 B = [0; b/tau; 0; b/(l*tau)];
 
 % output matrix
-% output is position and angle
-% C = [1 0 0 0;
-%     0 0 1 0];
-
-C = [1 0 0 0];
+C = [1 0 0 0]; % only position is integrated
 
 % feedforward
 D = 0;
@@ -46,19 +42,22 @@ else
 end
 
 % verify observability of the system
-% observability_matrix = obsv(A_aug, C_aug);
-% rank_observability = rank(observability_matrix);
-% 
-% if rank_observability == length(B_aug)
-%     fprintf('System is observable (rank = %d).\n', rank_observability);
-% else
-%     fprintf('System is not observable (rank = %d).\n', rank_observability);
-% end
+observability_matrix = obsv(A_aug, C_aug);
+rank_observability = rank(observability_matrix);
 
-%% Pole placement for 6 state system
+if rank_observability == length(B_aug)
+    fprintf('System is observable (rank = %d).\n', rank_observability);
+else
+    fprintf('System is not observable (rank = %d).\n', rank_observability);
+end
+
+%% Pole placement
 
 close all;
 
+% dominant poles yield:
+% T_s = 3 seconds
+% OS% = 10%
 re = 1.33;
 im = 1.82;
 
@@ -71,8 +70,10 @@ A_cl = A_aug-B_aug*K_i;
 % analyze natural frequencies and mode shapes
 [V, W] = eig(A_cl);
 
+% create system with closed loop state matrix
 sys_cl = ss(A_cl, B_aug, C_aug, D);
 
+% pole-zero plot
 figure();
 hold on;
 pzplot(sys_cl);
@@ -92,9 +93,9 @@ hold off;
 
 % step info
 x_step_info = stepinfo(step_cl, t);
-%theta_step_info = stepinfo(step_cl(:, 3), t)
 
-%% Run Simulation
+%% Run simulation
+
 system_params.l = 0.4185; % pendulum COM length (m)
 system_params.tau = 0.0561; % motor time constant (s)
 system_params.b = 0.0026; % PWM signal gain
@@ -125,11 +126,11 @@ theta = xlist(:,3);
 % dtheta = xlist(:,4);
 % z = xlist(:,5);
 
-
-%% load test data
+%% Load experimental data
 data = table2array(readtable("step_response_data.csv"));
 
 %% Visualize Data
+
 % organize data by start and end idx
 start_idx = 29;
 end_idx = int32(8 * 1/Ts + start_idx); % 8 seconds

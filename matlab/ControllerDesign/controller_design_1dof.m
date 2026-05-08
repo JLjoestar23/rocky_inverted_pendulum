@@ -1,4 +1,4 @@
-%% Linearization of the 1DOF 4 state model
+%% Linearization and creation of the 1-DOF 4 state model
 
 % pendulum characteristics
 l = 0.4185; % effective length of pendulum (m)
@@ -24,8 +24,6 @@ C = [1 0 0 0; 0 0 1 0];
 
 % feedforward
 D = 0;
-
-%N = -inv(C*(A-B*K)^-1*B);
 
 % create free-response state space model
 sys_ol = ss(A, B, C, D);
@@ -81,6 +79,9 @@ hold off;
 
 close all;
 
+% dominant poles yield:
+% T_s = 3 seconds
+% OS% = 10%
 re = 1.33;
 im = 1.82;
 
@@ -124,7 +125,7 @@ R = 1/u_max^2;
 [K_lqr, S, P] = lqr(sys_ol, Q, R);
 K_lqr = round(K_lqr, 2);
 
-%% Linearization of 6 State Model w/ Integrated position error
+%% Creation of 5 State Model w/ Integrated position error
 
 % pendulum characteristics
 l = 0.4185; % effective length of pendulum (m)
@@ -185,6 +186,9 @@ end
 
 close all;
 
+% dominant poles yield:
+% T_s = 3 seconds
+% OS% = 10%
 re = 1.33;
 im = 1.82;
 

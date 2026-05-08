@@ -2,7 +2,7 @@ function animate_cart_pendulum(tlist, xlist, params, record_status)
     % Enhanced cart-pendulum animation with improved aesthetics and functionality
     
     % Unpack params
-    l = 2*params.l;
+    l = params.l;
     
     % Create figure
     fig = figure('Color', 'w');
