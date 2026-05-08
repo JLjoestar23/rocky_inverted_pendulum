@@ -53,8 +53,9 @@ float angle_rad_diff = 0;
 float angle_rad;                // this is the angle in radians
 float angle_rate = 0;
 float angle_rad_accum = 0;      // this is the accumulated angle in radians
-float angle_prev_rad = 0; // previous angle measurement
+float angle_prev_rad = 0;       // previous angle measurement
 extern int32_t displacement;
+float z = 0;                    // integrated position error
 int32_t prev_displacement=0;
 uint32_t prev_time;
 
@@ -62,7 +63,6 @@ float v_c_L = 0;
 float v_c_R = 0;
 
 #define G_RATIO (162.5)
-
 
 
 LSM6 imu;
@@ -75,9 +75,6 @@ Balboa32U4ButtonA buttonA;
 #define FIXED_ANGLE_CORRECTION (0.26)  // ***** Replace the value 0.25 with the value you obtained from the Gyro calibration procedure
 
 
-
-
-
 //////////////////////////////////////////////////////////////////////////////////////////////
 // This is the main function that performs the balancing
 // It gets called approximately once every 10 ms  by the code in loop()
@@ -88,45 +85,39 @@ Balboa32U4ButtonA buttonA;
 void BalanceRocky()
 {
 
-    // **************Enter the control parameters here
-    float K[4] = {-240, -553, 910, 179};
-
+    // Choose control parameters here
+    // 1) Full-state feedback control
+    // 2) LQR (does not work well)
+    // 3) Full-state feedback w/ integrator
+    // float K[4] = {-222.56, -563.39, 1099.18, 218.94}; // full-state feedback
+    // float K[4] = {-400, -1004.7, 2619.5, 545.24}; // LQR
+    float K[5] = {-259, -560, 923, 187, 180}; // full-state feedback w/ integrator
 
     // float v_c_L, v_c_R; // these are the control velocities to be sent to the motors
     float v_d = 0; // this is the desired speed produced by the angle controller
 
 
-   // Variables available to you are: 
-   // angle_rad  - angle in radians
-   // angle_rad_accum - integral of angle
-   // measured_speedR - right wheel speed (m/s)
-   // measured_speedL - left wheel speed (m/s)
-   // distLeft_m - distance traveled by left wheel in meters
-   // distRight_m - distance traveled by right wheel in meters  (this is the integral of the velocities) 
-   // dist_accum - integral of the distance
+    // Variables available to you are: 
+    // angle_rad  - angle in radians
+    // angle_rad_accum - integral of angle
+    // measured_speedR - right wheel speed (m/s)
+    // measured_speedL - left wheel speed (m/s)
+    // distLeft_m - distance traveled by left wheel in meters
+    // distRight_m - distance traveled by right wheel in meters  (this is the integral of the velocities) 
+    // dist_accum - integral of the distance
 
-   // *** enter an equation for v_d in terms of the variables available ****
-    // v_d = Kp * angle_rad + Ki * angle_rad_accum; // this is the desired velocity from the angle controller 
-      
-
-  // The next two lines implement the feedback controller for the motor. Two separate velocities are calculated. 
-  //
-  //
-  // We use a trick here by criss-crossing the distance from left to right and 
-  // right to left. This helps ensure that the Left and Right motors are balanced
-
-  // *** enter equations for input signals for v_c (left and right) in terms of the variables available ****
+    // Define state measurements to use in feedback
     float x  = (distLeft_m + distRight_m)/2.0;
     float dx = (measured_speedL + measured_speedR)/2.0;
     float theta = -angle_rad;
     float dtheta = -angle_rad_diff;
-    // float dtheta = -angleRate;
+    float r = 0.5;
+    z += (r-x)*0.01;
 
-    // u = -Kx
-    float u = -(K[0]*x + K[1]*dx + K[2]*theta + K[3]*dtheta);
-
-    // v_c_R = -(K[0]*distLeft_m + K[1]*measured_speedR + K[2]*theta + K[3]*dtheta);
-    // v_c_L = -(K[0]*distRight_m + K[1]*measured_speedL + K[2]*theta + K[3]*dtheta);
+    // Control Law
+    // Use 1) for full-state feedback and LQR, use 2) for full-state feedback w/ integrator
+    // float u = -(K[0]*x + K[1]*dx + K[2]*theta + K[3]*dtheta);
+    float u = -(K[0]*x + K[1]*dx + K[2]*theta + K[3]*dtheta + K[4]*z);
 
     v_c_R = u;
     v_c_L = u;
@@ -144,7 +135,6 @@ void BalanceRocky()
    
     // Set the motor speeds
     motors.setSpeeds((int16_t) (v_c_L), (int16_t)(v_c_R));
-
 }
 
 
@@ -233,6 +223,7 @@ void balanceResetAccumulators()
     errAccumRight_m = 0.0;
     speed_err_left_acc = 0.0;
     speed_err_right_acc = 0.0;
+    z = 0.0;
 }
 
 
@@ -315,20 +306,16 @@ if(cur_time - prev_print_time > 103)   // do the printing every 105 ms. Don't wa
         Serial.print("\t");
         Serial.print(-angle_rad_diff);
         Serial.print("\t");
-        // Serial.print(distLeft_m);
+        Serial.print((measured_speedL + measured_speedR)/2.0);
+        Serial.print("\t");
+        Serial.println((distLeft_m + distRight_m)/2.0);
         // Serial.print("\t");
-        Serial.print(measured_speedL);
-        Serial.print("\t");
-        Serial.print(measured_speedR);
-        Serial.print("\t");
-        Serial.print(distLeft_m);
-        Serial.print("\t");
-        Serial.print(distRight_m);
-        Serial.print("\t");
+        // Serial.println(z);
+        // Serial.print("\t");
         // Serial.println(speedCont);
-        Serial.print(v_c_R);
-        Serial.print("\t");
-        Serial.println(v_c_L);
+        // Serial.print(v_c_R);
+        // Serial.print("\t");
+        // Serial.println(v_c_L);
         prev_print_time = cur_time;
   }
 
