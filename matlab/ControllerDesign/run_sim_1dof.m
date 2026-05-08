@@ -1,0 +1,66 @@
+function run_sim_1dof(K, record_status)
+    
+    arguments
+        % K = [-330.68, -728.98, 2.2655e+03, 452.26, 0];
+        % K = [-330.68, -728.98, 2.2655e+03, 452.26];
+        K = [-90.05, -469.12, 660.37, 131.44];
+        % default option is to not record
+        record_status = false;
+    end
+
+    clc;
+    close all;
+    
+    system_params.l = 0.4185; % pendulum COM length (m)
+    system_params.tau = 0.0561; % motor time constant (s)
+    system_params.b = 0.0026; % PWM signal gain
+    system_params.K = K;
+    
+    % define reference input
+    system_params.r = 0.5; % scalar
+    
+    % initial conditions
+    tspan = [0 6];
+    x_i = 0;
+    xdot_i = 0;
+    theta_i = deg2rad(0);
+    thetadot_i = deg2rad(0);
+    z_i = 0;
+
+    % choose between 4-state or 5-state initial conditions
+    % x0 = [x_i; xdot_i; theta_i; thetadot_i];
+    x0 = [x_i; xdot_i; theta_i; thetadot_i; z_i];
+    
+    % solve
+    options = odeset('MaxStep', 0.01);
+    % choose between 4-state or 5-state rate function
+    % [tlist, xlist] = ode45(@(t, x) nonlin_1dof_rate_func(t, x, system_params), tspan, x0, options);
+    [tlist, xlist] = ode45(@(t, x) nonlin_1dof_rate_func_int(t, x, system_params), tspan, x0, options);
+    
+    % for readability
+    x = xlist(:,1);
+    % dx = xlist(:,2);
+    theta = xlist(:,3);
+    % dtheta = xlist(:,4);
+    % z = xlist(:,5);
+
+    % plot result
+    figure();
+    subplot(2,1,1);
+    plot(tlist, x, 'Color', [0.2 0.5 0.9], 'LineWidth', 2);
+    title('Time Series of Pendulum States');
+    ylabel('Position (m)');
+    grid on;
+    subplot(2,1,2);
+    plot(tlist, theta, 'Color', [0.9 0.3 0.2], 'LineWidth', 2);
+    xlabel('Time (s)');
+    ylabel('Angle (rads)');
+    grid on;
+    
+    % disp step response characteristics for position
+    disp(stepinfo(xlist(:, 1), tlist));
+    % disp step response characteristics for angle
+    disp(stepinfo(xlist(:, 3), tlist));
+
+    animate_cart_pendulum(tlist, xlist, system_params, record_status);
+end
