@@ -63,6 +63,7 @@ ylabel('R', 'Interpreter', 'none');
 grid on
 
 %% Fit Average Motor Speed
+
 [xData, yData] = prepareCurveData(t, motor_avg');
 
 % Set up fittype and options.
@@ -74,15 +75,36 @@ opts.StartPoint = [1 1];
 % Fit model to data.
 [fitresult, gof] = fit(xData, yData, ft, opts);
 
-% Plot fit with data.
-figure('Name', 'Right Motor Curve Fit');
-h = plot(fitresult, xData, yData );
-legend(h, 'R vs. t', 'Right Motor Curve Fit', 'Location', 'NorthEast', 'Interpreter', 'none');
-% Label axes
-xlabel('t', 'Interpreter', 'none');
-ylabel('R', 'Interpreter', 'none');
-grid on
+% Create publication-quality plot
+figure('Name', 'Average Motor Velocity Curve Fit', 'Position', [100, 100, 800, 600]);
+hold on;
 
+% Plot data points with better styling
+scatter(xData, yData, 50, 'MarkerFaceColor', [0.2, 0.4, 0.7], ...
+    'MarkerEdgeColor', [0.1, 0.2, 0.4], 'MarkerFaceAlpha', 0.6, ...
+    'DisplayName', 'Experimental Data');
+
+% Plot fit line with better styling
+xFit = linspace(min(xData), max(xData), 200);
+yFit = fitresult(xFit);
+plot(xFit, yFit, 'LineWidth', 2.5, 'Color', [0.8, 0.2, 0.2], ...
+    'DisplayName', 'Fitted Curve');
+
+% Enhanced labels and formatting
+xlabel('Time (s)', 'FontSize', 14, 'FontWeight', 'bold');
+ylabel('Motor Speed (m/s)', 'FontSize', 14, 'FontWeight', 'bold');
+title('Average Motor Velocity Curve Fit', 'FontSize', 16, 'FontWeight', 'bold');
+
+% Improved legend
+legend('Location', 'SouthEast', 'FontSize', 12, 'Box', 'on');
+
+% Grid styling
+grid on;
+set(gca, 'GridLineStyle', ':', 'GridAlpha', 0.3);
+
+% Improve axis appearance
+set(gca, 'FontSize', 12, 'LineWidth', 1.2, 'Box', 'on');
+hold off;
 
 %% Finding Natural Frequency
 
